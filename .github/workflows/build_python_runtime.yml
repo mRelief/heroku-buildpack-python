@@ -37,7 +37,7 @@ env:
 jobs:
   heroku-22:
     if: inputs.stack == 'heroku-22' || inputs.stack == 'auto'
-    runs-on: pub-hk-ubuntu-24.04-xlarge
+    runs-on: ubuntu-latest
     env:
       STACK_VERSION: "22"
     steps:
@@ -62,7 +62,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: ["amd64", "arm64"]
-    runs-on: ${{ matrix.arch == 'arm64' && 'pub-hk-ubuntu-24.04-arm-xlarge' || 'pub-hk-ubuntu-24.04-xlarge' }}
+    runs-on: ubuntu-latest
     env:
       STACK_VERSION: "24"
     steps:
