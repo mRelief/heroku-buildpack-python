@@ -29,15 +29,15 @@ permissions:
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  AWS_DEFAULT_REGION: "us-east-1"
-  S3_BUCKET: "heroku-buildpack-python"
+  AWS_DEFAULT_REGION: "us-west-2"
+  S3_BUCKET: "mrelief-general-production"
 
 # Unfortunately these jobs cannot be easily written as a matrix since `matrix.exclude` does not
 # support expression syntax, and the `matrix` context is not available inside the job `if` key.
 jobs:
   heroku-22:
     if: inputs.stack == 'heroku-22' || inputs.stack == 'auto'
-    runs-on: pub-hk-ubuntu-24.04-xlarge
+    runs-on: ubuntu-latest
     env:
       STACK_VERSION: "22"
     steps:
@@ -62,7 +62,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: ["amd64", "arm64"]
-    runs-on: ${{ matrix.arch == 'arm64' && 'pub-hk-ubuntu-24.04-arm-xlarge' || 'pub-hk-ubuntu-24.04-xlarge' }}
+    runs-on: ubuntu-latest
     env:
       STACK_VERSION: "24"
     steps:
