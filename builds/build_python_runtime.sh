@@ -192,7 +192,7 @@ if [[ "${PYTHON_MAJOR_VERSION}" == +(3.9) ]]; then
 	#   - `lib/python3.9/config-3.9-x86_64-linux-gnu/libpython3.9.a`
 	find "${INSTALL_DIR}" -type f -name '*.a' -print -exec strip --strip-unneeded '{}' +
 elif ! find "${INSTALL_DIR}" -type f -name '*.a' -print -exec false '{}' +; then
-    abort "Unexpected static libraries found!"
+        abort "Unexpected static libraries found!"
 fi
 
 # Bundle the Tk runtime shared libraries and data files so they remain available on the Heroku
@@ -216,6 +216,25 @@ done
 
 cp --dereference --target-directory "${INSTALL_DIR}/lib/" --verbose "${TK_RUNTIME_LIBS[@]}"
 cp --archive --target-directory "${INSTALL_DIR}/lib/" --verbose "${TK_LIBRARY_DIRS[@]}"
+
+# Bundle the transitive runtime dependencies of Tk that aren't guaranteed to exist on the Heroku
+# run images (such as the X11 libraries). Skip standard C library components that are expected to
+# be present on the run image already to avoid overriding critical system libraries.
+mapfile -t tk_dependency_paths < <(ldd "${TK_RUNTIME_LIBS[@]}" | awk '/=> \\// { print $3 }' | sort --unique)
+for tk_dependency_path in "${tk_dependency_paths[@]}"; do
+        tk_dependency_basename="$(basename "${tk_dependency_path}")"
+        case "${tk_dependency_basename}" in
+                ld-linux-*.so.* | libc.so.* | libm.so.* | libdl.so.* | libpthread.so.* | librt.so.* | libutil.so.* | libnsl.so.*)
+                        continue
+                        ;;
+        esac
+
+        if [[ -e "${INSTALL_DIR}/lib/${tk_dependency_basename}" ]]; then
+                continue
+        fi
+
+        cp --dereference --target-directory "${INSTALL_DIR}/lib/" --verbose "${tk_dependency_path}"
+done
 
 # Remove unneeded test directories, similar to the official Docker Python images:
 # https://github.com/docker-library/python
