@@ -94,8 +94,6 @@ cd "${SRC_DIR}"
 # for maximum compatibility / most battle-tested build configuration:
 # https://github.com/docker-library/python
 CONFIGURE_OPTS=(
-	# Enable Tk support by default so the `_tkinter` stdlib extension is built.
-	"--with-tcltk"
 	# Explicitly set the target architecture rather than auto-detecting based on the host CPU.
 	# This only affects targets like i386 (for which we don't build), but we pass it anyway for
 	# completeness and parity with the Python Docker image builds.
