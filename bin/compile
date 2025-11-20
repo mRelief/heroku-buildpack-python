@@ -228,6 +228,9 @@ set_env PYTHONHOME "\${HOME}/.heroku/python"
 # Set variables for C libraries.
 set_env LIBRARY_PATH "\${HOME}/.heroku/python/lib\${LIBRARY_PATH:+:\${LIBRARY_PATH}}"
 set_env LD_LIBRARY_PATH "\${HOME}/.heroku/python/lib\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}"
+# Ensure Tk can locate its bundled runtime libraries when the system image lacks Tk packages.
+set_env TCL_LIBRARY "\${HOME}/.heroku/python/lib/tcl8.6"
+set_env TK_LIBRARY "\${HOME}/.heroku/python/lib/tk8.6"
 # Locale.
 set_default_env LANG en_US.UTF-8
 # Tell Python to look for Python modules in the /app dir. Don't change this.

@@ -146,8 +146,10 @@ if [[ "${PYTHON_MAJOR_VERSION}" != +(3.9|3.10) ]]; then
 	)
 fi
 
-# Allow additional configure flags to be supplied via PYTHON_CONFIGURE_OPTS while keeping
-# the defaults (such as --with-tcltk) earlier in the list so user-supplied values win.
+# Tk is discovered via pkg-config from the `tk-dev`/`tcl-dev` packages in the build image,
+# so no extra CPPFLAGS/LDFLAGS/PKG_CONFIG_PATH tweaking is required here. Allow additional
+# configure flags to be supplied via PYTHON_CONFIGURE_OPTS while keeping the defaults earlier
+# in the list so user-supplied values win.
 if [[ -n "${PYTHON_CONFIGURE_OPTS:-}" ]]; then
 	# shellcheck disable=SC2206 # We intentionally rely on word-splitting like configure scripts.
 	PYTHON_CONFIGURE_OPTS_ARRAY=( ${PYTHON_CONFIGURE_OPTS} )
@@ -190,8 +192,30 @@ if [[ "${PYTHON_MAJOR_VERSION}" == +(3.9) ]]; then
 	#   - `lib/python3.9/config-3.9-x86_64-linux-gnu/libpython3.9.a`
 	find "${INSTALL_DIR}" -type f -name '*.a' -print -exec strip --strip-unneeded '{}' +
 elif ! find "${INSTALL_DIR}" -type f -name '*.a' -print -exec false '{}' +; then
-	abort "Unexpected static libraries found!"
+    abort "Unexpected static libraries found!"
 fi
+
+# Bundle the Tk runtime shared libraries and data files so they remain available on the Heroku
+# run image (which doesn't include Tk by default). This also avoids runtime lookups against the
+# system library paths which would break once the archive is relocated by the buildpack.
+shopt -s nullglob
+TCL_TK_VERSION="$(tclsh <<< 'puts $tcl_version')"
+TK_RUNTIME_LIBS=(/usr/lib/*/libtcl${TCL_TK_VERSION}.so*)
+TK_RUNTIME_LIBS+=(/usr/lib/*/libtk${TCL_TK_VERSION}.so*)
+if [[ "${#TK_RUNTIME_LIBS[@]}" -eq 0 ]]; then
+        abort "Tk runtime shared libraries weren't found for version ${TCL_TK_VERSION}!"
+fi
+
+TK_LIBRARY_DIRS=(/usr/share/tcltk/tcl${TCL_TK_VERSION})
+TK_LIBRARY_DIRS+=(/usr/share/tcltk/tk${TCL_TK_VERSION})
+for tk_library_dir in "${TK_LIBRARY_DIRS[@]}"; do
+        if [[ ! -d "${tk_library_dir}" ]]; then
+                abort "Tk runtime library directory '${tk_library_dir}' wasn't found!"
+        fi
+done
+
+cp --dereference --target-directory "${INSTALL_DIR}/lib/" --verbose "${TK_RUNTIME_LIBS[@]}"
+cp --archive --target-directory "${INSTALL_DIR}/lib/" --verbose "${TK_LIBRARY_DIRS[@]}"
 
 # Remove unneeded test directories, similar to the official Docker Python images:
 # https://github.com/docker-library/python
