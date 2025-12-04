@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+- Changed the default Python version for new apps from 3.13 to 3.14. ([#1984](https://github.com/heroku/heroku-buildpack-python/pull/1984))
+
+## [v322] - 2025-12-02
+
+- The Python 3.14 version alias now resolves to Python 3.14.1. ([#1982](https://github.com/heroku/heroku-buildpack-python/pull/1982))
+- The Python 3.13 version alias now resolves to Python 3.13.10. ([#1982](https://github.com/heroku/heroku-buildpack-python/pull/1982))
+- Updated uv from 0.9.11 to 0.9.14. ([#1979](https://github.com/heroku/heroku-buildpack-python/pull/1979))
+
+## [v321] - 2025-11-21
+
+- Deprecated support for Python 3.10. ([#1972](https://github.com/heroku/heroku-buildpack-python/pull/1972))
+- Updated uv from 0.9.9 to 0.9.11. ([#1973](https://github.com/heroku/heroku-buildpack-python/pull/1973))
+- Added more messaging to the build log recommending uv. ([#1975](https://github.com/heroku/heroku-buildpack-python/pull/1975))
+- Switched from using `--disable-pip-version-check` to the env var `PIP_DISABLE_PIP_VERSION_CHECK=1` when using pip. ([#1974](https://github.com/heroku/heroku-buildpack-python/pull/1974))
 
 ## [v320] - 2025-11-20
 
@@ -1403,7 +1417,9 @@ Default Python is now latest 2.7.10. Updated pip and Distribute.
 - Setuptools updated to v16.0
 - pip updated to v7.0.1
 
-[unreleased]: https://github.com/heroku/heroku-buildpack-python/compare/v320...main
+[unreleased]: https://github.com/heroku/heroku-buildpack-python/compare/v322...main
+[v322]: https://github.com/heroku/heroku-buildpack-python/compare/v321...v322
+[v321]: https://github.com/heroku/heroku-buildpack-python/compare/v320...v321
 [v320]: https://github.com/heroku/heroku-buildpack-python/compare/v319...v320
 [v319]: https://github.com/heroku/heroku-buildpack-python/compare/v318...v319
 [v318]: https://github.com/heroku/heroku-buildpack-python/compare/v317...v318

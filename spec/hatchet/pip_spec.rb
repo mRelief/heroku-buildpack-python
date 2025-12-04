@@ -15,11 +15,11 @@ RSpec.describe 'pip support' do
           remote: -----> Installing Python #{DEFAULT_PYTHON_FULL_VERSION}
           remote: -----> Installing pip #{PIP_VERSION}
           remote: -----> Installing dependencies using 'pip install -r requirements.txt'
-          remote:        Collecting typing-extensions==4.12.2 \\(from -r requirements.txt \\(line 5\\)\\)
-          remote:          Downloading typing_extensions-4.12.2-py3-none-any.whl.metadata \\(3.0 kB\\)
-          remote:        Downloading typing_extensions-4.12.2-py3-none-any.whl \\(37 kB\\)
+          remote:        Collecting typing-extensions==4.15.0 \\(from -r requirements.txt \\(line 5\\)\\)
+          remote:          Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata \\(3.3 kB\\)
+          remote:        Downloading typing_extensions-4.15.0-py3-none-any.whl \\(44 kB\\)
           remote:        Installing collected packages: typing-extensions
-          remote:        Successfully installed typing-extensions-4.12.2
+          remote:        Successfully installed typing-extensions-4.15.0
           remote: -----> Running bin/post_compile hook
           remote:        BUILD_DIR=/tmp/build_.+
           remote:        CACHE_DIR=/tmp/codon/tmp/cache
@@ -30,32 +30,45 @@ RSpec.describe 'pip support' do
           remote:        LD_LIBRARY_PATH=/app/.heroku/python/lib
           remote:        LIBRARY_PATH=/app/.heroku/python/lib
           remote:        PATH=/app/.heroku/python/bin::/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          remote:        PIP_DISABLE_PIP_VERSION_CHECK=1
           remote:        PKG_CONFIG_PATH=/app/.heroku/python/lib/pkg-config
           remote:        PYTHONUNBUFFERED=1
           remote: -----> Saving cache
+          remote: 
+          remote:  !     Note: We recently added support for the package manager uv:
+          remote:  !     https://devcenter.heroku.com/changelog-items/3238
+          remote:  !     
+          remote:  !     It's now our recommended Python package manager, since it
+          remote:  !     supports lockfiles, is faster, gives more helpful error
+          remote:  !     messages, and is actively maintained by a full-time team.
+          remote:  !     
+          remote:  !     If you haven't tried it yet, we suggest you take a look!
+          remote:  !     https://docs.astral.sh/uv/
+          remote: 
           remote: -----> Inline app detected
           remote: LANG=en_US.UTF-8
           remote: LD_LIBRARY_PATH=/app/.heroku/python/lib
           remote: LIBRARY_PATH=/app/.heroku/python/lib
           remote: PATH=/app/.heroku/python/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          remote: PIP_DISABLE_PIP_VERSION_CHECK=1
           remote: PYTHONHOME=/app/.heroku/python
           remote: PYTHONPATH=/app
           remote: PYTHONUNBUFFERED=true
           remote: 
           remote: \\['',
           remote:  '/app',
-          remote:  '/app/.heroku/python/lib/python313.zip',
-          remote:  '/app/.heroku/python/lib/python3.13',
-          remote:  '/app/.heroku/python/lib/python3.13/lib-dynload',
-          remote:  '/app/.heroku/python/lib/python3.13/site-packages'\\]
+          remote:  '/app/.heroku/python/lib/python314.zip',
+          remote:  '/app/.heroku/python/lib/python3.14',
+          remote:  '/app/.heroku/python/lib/python3.14/lib-dynload',
+          remote:  '/app/.heroku/python/lib/python3.14/site-packages'\\]
           remote: 
-          remote: pip #{PIP_VERSION} from /app/.heroku/python/lib/python3.13/site-packages/pip \\(python 3.13\\)
+          remote: pip #{PIP_VERSION} from /app/.heroku/python/lib/python3.14/site-packages/pip \\(python 3.14\\)
           remote: Package           Version
           remote: ----------------- -------
           remote: pip               #{PIP_VERSION}
-          remote: typing_extensions 4.12.2
+          remote: typing_extensions 4.15.0
           remote: 
-          remote: <module 'typing_extensions' from '/app/.heroku/python/lib/python3.13/site-packages/typing_extensions.py'>
+          remote: <module 'typing_extensions' from '/app/.heroku/python/lib/python3.14/site-packages/typing_extensions.py'>
           remote: 
           remote: \\{
           remote:   "cache_restore_duration": [0-9.]+,
@@ -72,11 +85,11 @@ RSpec.describe 'pip support' do
           remote:   "pre_compile_hook": false,
           remote:   "python_install_duration": [0-9.]+,
           remote:   "python_version": "#{DEFAULT_PYTHON_FULL_VERSION}",
-          remote:   "python_version_major": "3.13",
+          remote:   "python_version_major": "3.14",
           remote:   "python_version_origin": ".python-version",
           remote:   "python_version_outdated": false,
           remote:   "python_version_pinned": false,
-          remote:   "python_version_requested": "3.13",
+          remote:   "python_version_requested": "3.14",
           remote:   "total_duration": [0-9.]+
           remote: \\}
         REGEX
@@ -90,11 +103,10 @@ RSpec.describe 'pip support' do
           remote: -----> Using cached install of Python #{DEFAULT_PYTHON_FULL_VERSION}
           remote: -----> Installing pip #{PIP_VERSION}
           remote: -----> Installing dependencies using 'pip install -r requirements.txt'
-          remote:        Requirement already satisfied: typing-extensions==4.12.2 \\(from -r requirements.txt \\(line 5\\)\\) \\(4.12.2\\)
+          remote:        Requirement already satisfied: typing-extensions==4.15.0 \\(from -r requirements.txt \\(line 5\\)\\) \\(4.15.0\\)
           remote: -----> Running bin/post_compile hook
           remote:        .+
           remote: -----> Saving cache
-          remote: -----> Inline app detected
         REGEX
 
         # For historical reasons pip is made available at run-time too, unlike some of the other package managers.
@@ -106,11 +118,12 @@ RSpec.describe 'pip support' do
           LD_LIBRARY_PATH=/app/.heroku/python/lib
           LIBRARY_PATH=/app/.heroku/python/lib
           PATH=/app/.heroku/python/bin:/usr/local/bin:/usr/bin:/bin
+          PIP_DISABLE_PIP_VERSION_CHECK=1
           PYTHONHOME=/app/.heroku/python
           PYTHONPATH=/app
           PYTHONUNBUFFERED=true
           WEB_CONCURRENCY=2
-          pip #{PIP_VERSION} from /app/.heroku/python/lib/python3.13/site-packages/pip (python 3.13)
+          pip #{PIP_VERSION} from /app/.heroku/python/lib/python3.14/site-packages/pip (python 3.14)
         OUTPUT
         expect($CHILD_STATUS.exitstatus).to eq(0)
       end
@@ -136,14 +149,14 @@ RSpec.describe 'pip support' do
           remote: -----> Installing Python #{DEFAULT_PYTHON_FULL_VERSION}
           remote: -----> Installing pip #{PIP_VERSION}
           remote: -----> Installing dependencies using 'pip install -r requirements.txt'
-          remote:        Collecting typing-extensions==4.12.2 (from -r requirements.txt (line 5))
-          remote:          Downloading typing_extensions-4.12.2-py3-none-any.whl.metadata (3.0 kB)
+          remote:        Collecting typing-extensions==4.15.0 (from -r requirements.txt (line 5))
+          remote:          Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
           remote:        Collecting six==1.17.0 (from -r requirements.txt (line 6))
           remote:          Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
-          remote:        Downloading typing_extensions-4.12.2-py3-none-any.whl (37 kB)
+          remote:        Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
           remote:        Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
           remote:        Installing collected packages: typing-extensions, six
-          remote:        Successfully installed six-1.17.0 typing-extensions-4.12.2
+          remote:        Successfully installed six-1.17.0 typing-extensions-4.15.0
           remote: -----> Saving cache
         OUTPUT
       end
@@ -159,7 +172,7 @@ RSpec.describe 'pip support' do
 
     it 'rewrites .pth, .egg-link and finder paths correctly for hooks, later buildpacks, runtime and cached builds' do
       app.deploy do |app|
-        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX))
+        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX, Regexp::MULTILINE))
           remote: -----> Running bin/post_compile hook
           remote:        easy-install.pth:/app/.heroku/python/src/gunicorn
           remote:        easy-install.pth:/tmp/build_.+/packages/local_package_setup_py
@@ -171,6 +184,7 @@ RSpec.describe 'pip support' do
           remote:        Running entrypoint for the setup.py-based local package: Hello from setup.py!
           remote:        Running entrypoint for the VCS package: gunicorn \\(version 20.1.0\\)
           remote: -----> Saving cache
+          .+
           remote: -----> Inline app detected
           remote: easy-install.pth:/app/.heroku/python/src/gunicorn
           remote: easy-install.pth:/tmp/build_.+/packages/local_package_setup_py
@@ -199,7 +213,7 @@ RSpec.describe 'pip support' do
         # Test that the cached .pth files work correctly.
         app.commit!
         app.push!
-        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX))
+        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX, Regexp::MULTILINE))
           remote: -----> Running bin/post_compile hook
           remote:        easy-install.pth:/app/.heroku/python/src/gunicorn
           remote:        easy-install.pth:/tmp/build_.+/packages/local_package_setup_py
@@ -211,6 +225,7 @@ RSpec.describe 'pip support' do
           remote:        Running entrypoint for the setup.py-based local package: Hello from setup.py!
           remote:        Running entrypoint for the VCS package: gunicorn \\(version 20.1.0\\)
           remote: -----> Saving cache
+          .+
           remote: -----> Inline app detected
           remote: easy-install.pth:/app/.heroku/python/src/gunicorn
           remote: easy-install.pth:/tmp/build_.+/packages/local_package_setup_py
@@ -272,8 +287,8 @@ RSpec.describe 'pip support' do
           remote: 
           remote:  !     Warning: Support for Python 3.9 is ending soon!
           remote:  !     
-          remote:  !     Python 3.9 will reach its upstream end-of-life in October 2025,
-          remote:  !     at which point it will no longer receive security updates:
+          remote:  !     Python 3.9 reached its upstream end-of-life on 31st October 2025,
+          remote:  !     and so no longer receives security updates:
           remote:  !     https://devguide.python.org/versions/#supported-versions
           remote:  !     
           remote:  !     As such, support for Python 3.9 will be removed from this
@@ -305,11 +320,11 @@ RSpec.describe 'pip support' do
           remote: -----> Installing Python 3.9.0
           remote: -----> Installing pip #{PIP_VERSION}, setuptools #{SETUPTOOLS_VERSION} and wheel #{WHEEL_VERSION}
           remote: -----> Installing dependencies using 'pip install -r requirements.txt'
-          remote:        Collecting typing-extensions==4.14.1 (from -r requirements.txt (line 2))
-          remote:          Downloading typing_extensions-4.14.1-py3-none-any.whl.metadata (3.0 kB)
-          remote:        Downloading typing_extensions-4.14.1-py3-none-any.whl (43 kB)
+          remote:        Collecting typing-extensions==4.15.0 (from -r requirements.txt (line 2))
+          remote:          Downloading typing_extensions-4.15.0-py3-none-any.whl.metadata (3.3 kB)
+          remote:        Downloading typing_extensions-4.15.0-py3-none-any.whl (44 kB)
           remote:        Installing collected packages: typing-extensions
-          remote:        Successfully installed typing-extensions-4.14.1
+          remote:        Successfully installed typing-extensions-4.15.0
           remote: -----> Saving cache
         OUTPUT
         app.commit!
@@ -319,7 +334,7 @@ RSpec.describe 'pip support' do
         # regex variant can be removed once support for Python 3.10 and older is dropped.
         expect(clean_output(app.output)).to include(<<~OUTPUT)
           remote: -----> Installing dependencies using 'pip install -r requirements.txt'
-          remote:        Requirement already satisfied: typing-extensions==4.14.1 (from -r requirements.txt (line 2)) (4.14.1)
+          remote:        Requirement already satisfied: typing-extensions==4.15.0 (from -r requirements.txt (line 2)) (4.15.0)
           remote: -----> Saving cache
         OUTPUT
       end

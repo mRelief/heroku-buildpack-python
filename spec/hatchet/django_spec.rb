@@ -43,6 +43,7 @@ RSpec.describe 'Django support' do
           remote:         'LD_LIBRARY_PATH': '/app/.heroku/python/lib',
           remote:         'LIBRARY_PATH': '/app/.heroku/python/lib',
           remote:         'PATH': '/app/.heroku/python/bin::/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+          remote:         'PIP_DISABLE_PIP_VERSION_CHECK': '1',
           remote:         'PKG_CONFIG_PATH': '/app/.heroku/python/lib/pkg-config',
           remote:         'PWD': '/tmp/build_\\w+',
           remote:         'PYTHONPATH': '\\.',
@@ -50,10 +51,10 @@ RSpec.describe 'Django support' do
           remote:        
           remote:        \\['/tmp/build_\\w+/backend',
           remote:         '/tmp/build_\\w+',
-          remote:         '/app/.heroku/python/lib/python313.zip',
-          remote:         '/app/.heroku/python/lib/python3.13',
-          remote:         '/app/.heroku/python/lib/python3.13/lib-dynload',
-          remote:         '/app/.heroku/python/lib/python3.13/site-packages'\\]
+          remote:         '/app/.heroku/python/lib/python314.zip',
+          remote:         '/app/.heroku/python/lib/python3.14',
+          remote:         '/app/.heroku/python/lib/python3.14/lib-dynload',
+          remote:         '/app/.heroku/python/lib/python3.14/site-packages'\\]
           remote:        
           remote:        1 static file copied to '/tmp/build_\\w+/backend/staticfiles'.
           remote: 
@@ -84,6 +85,7 @@ RSpec.describe 'Django support' do
           remote:         'LD_LIBRARY_PATH': '/app/.heroku/python/lib',
           remote:         'LIBRARY_PATH': '/app/.heroku/python/lib',
           remote:         'PATH': '/app/.heroku/python/bin::/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+          remote:         'PIP_DISABLE_PIP_VERSION_CHECK': '1',
           remote:         'PKG_CONFIG_PATH': '/invalid-path',
           remote:         'PWD': '/tmp/build_\\w+',
           remote:         'PYTHONPATH': '/invalid-path',

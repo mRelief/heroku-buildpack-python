@@ -19,7 +19,7 @@ RSpec.describe 'Poetry support' do
           remote:        
           remote:        Package operations: 1 install, 0 updates, 0 removals
           remote:        
-          remote:          - Installing typing-extensions \\(4.12.2\\)
+          remote:          - Installing typing-extensions \\(4.15.0\\)
           remote: -----> Running bin/post_compile hook
           remote:        BUILD_DIR=/tmp/build_.+
           remote:        CACHE_DIR=/tmp/codon/tmp/cache
@@ -35,6 +35,17 @@ RSpec.describe 'Poetry support' do
           remote:        POETRY_VIRTUALENVS_USE_POETRY_PYTHON=true
           remote:        PYTHONUNBUFFERED=1
           remote: -----> Saving cache
+          remote: 
+          remote:  !     Note: We recently added support for the package manager uv:
+          remote:  !     https://devcenter.heroku.com/changelog-items/3238
+          remote:  !     
+          remote:  !     It's now our recommended Python package manager, since it
+          remote:  !     supports lockfiles, is faster, gives more helpful error
+          remote:  !     messages, and is actively maintained by a full-time team.
+          remote:  !     
+          remote:  !     If you haven't tried it yet, we suggest you take a look!
+          remote:  !     https://docs.astral.sh/uv/
+          remote: 
           remote: -----> Inline app detected
           remote: LANG=en_US.UTF-8
           remote: LD_LIBRARY_PATH=/app/.heroku/python/lib
@@ -48,16 +59,16 @@ RSpec.describe 'Poetry support' do
           remote: 
           remote: \\['',
           remote:  '/app',
-          remote:  '/app/.heroku/python/lib/python313.zip',
-          remote:  '/app/.heroku/python/lib/python3.13',
-          remote:  '/app/.heroku/python/lib/python3.13/lib-dynload',
-          remote:  '/app/.heroku/python/lib/python3.13/site-packages'\\]
+          remote:  '/app/.heroku/python/lib/python314.zip',
+          remote:  '/app/.heroku/python/lib/python3.14',
+          remote:  '/app/.heroku/python/lib/python3.14/lib-dynload',
+          remote:  '/app/.heroku/python/lib/python3.14/site-packages'\\]
           remote: 
           remote: Poetry \\(version #{POETRY_VERSION}\\)
           remote: Skipping virtualenv creation, as specified in config file.
-          remote: typing-extensions 4.12.2 Backported and Experimental Type Hints for Python ...
+          remote: typing-extensions 4.15.0 Backported and Experimental Type Hints for Python ...
           remote: 
-          remote: <module 'typing_extensions' from '/app/.heroku/python/lib/python3.13/site-packages/typing_extensions.py'>
+          remote: <module 'typing_extensions' from '/app/.heroku/python/lib/python3.14/site-packages/typing_extensions.py'>
           remote: 
           remote: \\{
           remote:   "cache_restore_duration": [0-9.]+,
@@ -74,11 +85,11 @@ RSpec.describe 'Poetry support' do
           remote:   "pre_compile_hook": false,
           remote:   "python_install_duration": [0-9.]+,
           remote:   "python_version": "#{DEFAULT_PYTHON_FULL_VERSION}",
-          remote:   "python_version_major": "3.13",
+          remote:   "python_version_major": "3.14",
           remote:   "python_version_origin": ".python-version",
           remote:   "python_version_outdated": false,
           remote:   "python_version_pinned": false,
-          remote:   "python_version_requested": "3.13",
+          remote:   "python_version_requested": "3.14",
           remote:   "total_duration": [0-9.]+
           remote: \\}
         REGEX
@@ -98,7 +109,6 @@ RSpec.describe 'Poetry support' do
           remote: -----> Running bin/post_compile hook
           remote:        .+
           remote: -----> Saving cache
-          remote: -----> Inline app detected
         REGEX
 
         command = 'bin/print-env-vars.sh && if command -v poetry; then echo "Poetry unexpectedly found!" && exit 1; fi'
@@ -120,8 +130,9 @@ RSpec.describe 'Poetry support' do
     end
   end
 
-  context 'when the Poetry and Python versions have changed since the last build' do
-    let(:buildpacks) { ['https://github.com/heroku/heroku-buildpack-python#v275'] }
+  # TODO: Rename this test description back this when the Poetry version next changes.
+  context 'when the Python version has changed since the last build' do
+    let(:buildpacks) { ['https://github.com/heroku/heroku-buildpack-python#v313'] }
     let(:app) { Hatchet::Runner.new('spec/fixtures/poetry_basic', buildpacks:) }
 
     it 'clears the cache before installing' do
@@ -132,20 +143,18 @@ RSpec.describe 'Poetry support' do
         app.push!
         expect(clean_output(app.output)).to include(<<~OUTPUT)
           remote: -----> Python app detected
-          remote: -----> Using Python 3.13 specified in .python-version
+          remote: -----> Using Python 3.14 specified in .python-version
           remote: -----> Discarding cache since:
-          remote:        - The Python version has changed from 3.13.1 to #{LATEST_PYTHON_3_13}
-          remote:        - The Poetry version has changed from 2.0.1 to #{POETRY_VERSION}
-          remote: -----> Installing Python #{LATEST_PYTHON_3_13}
+          remote:        - The Python version has changed from 3.14.0 to #{LATEST_PYTHON_3_14}
+          remote: -----> Installing Python #{LATEST_PYTHON_3_14}
           remote: -----> Installing Poetry #{POETRY_VERSION}
           remote: -----> Installing dependencies using 'poetry sync --only main'
           remote:        Installing dependencies from lock file
           remote:        
           remote:        Package operations: 1 install, 0 updates, 0 removals
           remote:        
-          remote:          - Installing typing-extensions (4.12.2)
+          remote:          - Installing typing-extensions (4.15.0)
           remote: -----> Saving cache
-          remote: -----> Discovering process types
         OUTPUT
       end
     end
@@ -157,14 +166,14 @@ RSpec.describe 'Poetry support' do
 
     it 'rewrites .pth and finder paths correctly for hooks, later buildpacks, runtime and cached builds' do
       app.deploy do |app|
-        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX))
+        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX, Regexp::MULTILINE))
           remote: -----> Installing dependencies using 'poetry sync --only main'
           remote:        Installing dependencies from lock file
           remote:        
           remote:        Package operations: 4 installs, 0 updates, 0 removals
           remote:        
-          remote:          - Installing packaging \\(24.2\\)
-          remote:          - Installing gunicorn \\(23.0.0 bacbf8a\\)
+          remote:          - Installing packaging \\(25.0\\)
+          remote:          - Installing gunicorn \\(23.0.0 56b5ad8\\)
           remote:          - Installing local-package-pyproject-toml \\(0.0.1 /tmp/build_.+/packages/local_package_pyproject_toml\\)
           remote:          - Installing local-package-setup-py \\(0.0.1 /tmp/build_.+/packages/local_package_setup_py\\)
           remote:        
@@ -180,6 +189,7 @@ RSpec.describe 'Poetry support' do
           remote:        Running entrypoint for the setup.py-based local package: Hello from setup.py!
           remote:        Running entrypoint for the VCS package: gunicorn \\(version 23.0.0\\)
           remote: -----> Saving cache
+          .+
           remote: -----> Inline app detected
           remote: __editable___gunicorn_23_0_0_finder.py:/app/.heroku/python/src/gunicorn/gunicorn'}
           remote: __editable___local_package_pyproject_toml_0_0_1_finder.py:/tmp/build_.+/packages/local_package_pyproject_toml/local_package_pyproject_toml'}
@@ -208,13 +218,13 @@ RSpec.describe 'Poetry support' do
         # Test that the cached .pth files work correctly.
         app.commit!
         app.push!
-        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX))
+        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX, Regexp::MULTILINE))
           remote: -----> Installing dependencies using 'poetry sync --only main'
           remote:        Installing dependencies from lock file
           remote:        
           remote:        Package operations: 0 installs, 3 updates, 0 removals
           remote:        
-          remote:          - Updating gunicorn \\(23.0.0 /app/.heroku/python/src/gunicorn -> 23.0.0 bacbf8a\\)
+          remote:          - Updating gunicorn \\(23.0.0 /app/.heroku/python/src/gunicorn -> 23.0.0 56b5ad8\\)
           remote:          - Updating local-package-pyproject-toml \\(0.0.1 /tmp/build_.+/packages/local_package_pyproject_toml -> 0.0.1 /tmp/build_.+/packages/local_package_pyproject_toml\\)
           remote:          - Updating local-package-setup-py \\(0.0.1 /tmp/build_.+/packages/local_package_setup_py -> 0.0.1 /tmp/build_.+/packages/local_package_setup_py\\)
           remote:        
@@ -230,6 +240,7 @@ RSpec.describe 'Poetry support' do
           remote:        Running entrypoint for the setup.py-based local package: Hello from setup.py!
           remote:        Running entrypoint for the VCS package: gunicorn \\(version 23.0.0\\)
           remote: -----> Saving cache
+          .+
           remote: -----> Inline app detected
           remote: __editable___gunicorn_23_0_0_finder.py:/app/.heroku/python/src/gunicorn/gunicorn'}
           remote: __editable___local_package_pyproject_toml_0_0_1_finder.py:/tmp/build_.+/packages/local_package_pyproject_toml/local_package_pyproject_toml'}
@@ -260,8 +271,8 @@ RSpec.describe 'Poetry support' do
           remote: 
           remote:  !     Warning: Support for Python 3.9 is ending soon!
           remote:  !     
-          remote:  !     Python 3.9 will reach its upstream end-of-life in October 2025,
-          remote:  !     at which point it will no longer receive security updates:
+          remote:  !     Python 3.9 reached its upstream end-of-life on 31st October 2025,
+          remote:  !     and so no longer receives security updates:
           remote:  !     https://devguide.python.org/versions/#supported-versions
           remote:  !     
           remote:  !     As such, support for Python 3.9 will be removed from this
@@ -297,7 +308,7 @@ RSpec.describe 'Poetry support' do
           remote:        
           remote:        Package operations: 1 install, 0 updates, 0 removals
           remote:        
-          remote:          - Installing typing-extensions (4.12.2)
+          remote:          - Installing typing-extensions (4.15.0)
           remote: -----> Saving cache
         OUTPUT
       end

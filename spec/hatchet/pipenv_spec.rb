@@ -32,6 +32,17 @@ RSpec.describe 'Pipenv support' do
           remote:        PYTHONUNBUFFERED=1
           remote:        VIRTUAL_ENV=/app/.heroku/python
           remote: -----> Saving cache
+          remote: 
+          remote:  !     Note: We recently added support for the package manager uv:
+          remote:  !     https://devcenter.heroku.com/changelog-items/3238
+          remote:  !     
+          remote:  !     It's now our recommended Python package manager, since it
+          remote:  !     supports lockfiles, is faster, gives more helpful error
+          remote:  !     messages, and is actively maintained by a full-time team.
+          remote:  !     
+          remote:  !     If you haven't tried it yet, we suggest you take a look!
+          remote:  !     https://docs.astral.sh/uv/
+          remote: 
           remote: -----> Inline app detected
           remote: LANG=en_US.UTF-8
           remote: LD_LIBRARY_PATH=/app/.heroku/python/lib
@@ -46,18 +57,18 @@ RSpec.describe 'Pipenv support' do
           remote: 
           remote: \\['',
           remote:  '/app',
-          remote:  '/app/.heroku/python/lib/python313.zip',
-          remote:  '/app/.heroku/python/lib/python3.13',
-          remote:  '/app/.heroku/python/lib/python3.13/lib-dynload',
-          remote:  '/app/.heroku/python/lib/python3.13/site-packages'\\]
+          remote:  '/app/.heroku/python/lib/python314.zip',
+          remote:  '/app/.heroku/python/lib/python3.14',
+          remote:  '/app/.heroku/python/lib/python3.14/lib-dynload',
+          remote:  '/app/.heroku/python/lib/python3.14/site-packages'\\]
           remote: 
           remote: pipenv, version #{PIPENV_VERSION}
           remote: Package           Version
           remote: ----------------- -+
-          remote: certifi           2025.7.14
-          remote: typing_extensions 4.12.2
+          remote: certifi           2025.11.12
+          remote: typing_extensions 4.15.0
           remote: 
-          remote: <module 'typing_extensions' from '/app/.heroku/python/lib/python3.13/site-packages/typing_extensions.py'>
+          remote: <module 'typing_extensions' from '/app/.heroku/python/lib/python3.14/site-packages/typing_extensions.py'>
           remote: 
           remote: \\{
           remote:   "cache_restore_duration": [0-9.]+,
@@ -74,11 +85,11 @@ RSpec.describe 'Pipenv support' do
           remote:   "pre_compile_hook": false,
           remote:   "python_install_duration": [0-9.]+,
           remote:   "python_version": "#{DEFAULT_PYTHON_FULL_VERSION}",
-          remote:   "python_version_major": "3.13",
+          remote:   "python_version_major": "3.14",
           remote:   "python_version_origin": "Pipfile.lock",
           remote:   "python_version_outdated": false,
           remote:   "python_version_pinned": false,
-          remote:   "python_version_requested": "3.13",
+          remote:   "python_version_requested": "3.14",
           remote:   "total_duration": [0-9.]+
           remote: \\}
         REGEX
@@ -96,7 +107,6 @@ RSpec.describe 'Pipenv support' do
           remote: -----> Running bin/post_compile hook
           remote:        .+
           remote: -----> Saving cache
-          remote: -----> Inline app detected
         REGEX
 
         # For historical reasons Pipenv is made available at run-time too, unlike some of the other package managers.
@@ -141,7 +151,6 @@ RSpec.describe 'Pipenv support' do
           remote: -----> Installing dependencies using 'pipenv install --deploy'
           remote:        Installing dependencies from Pipfile.lock \\(.+\\)...
           remote: -----> Saving cache
-          remote: -----> Discovering process types
         REGEX
       end
     end
@@ -162,8 +171,8 @@ RSpec.describe 'Pipenv support' do
           remote: 
           remote:  !     Warning: Support for Python 3.9 is ending soon!
           remote:  !     
-          remote:  !     Python 3.9 will reach its upstream end-of-life in October 2025,
-          remote:  !     at which point it will no longer receive security updates:
+          remote:  !     Python 3.9 reached its upstream end-of-life on 31st October 2025,
+          remote:  !     and so no longer receives security updates:
           remote:  !     https://devguide.python.org/versions/#supported-versions
           remote:  !     
           remote:  !     As such, support for Python 3.9 will be removed from this
@@ -303,8 +312,10 @@ RSpec.describe 'Pipenv support' do
           remote:  !     delete your 'Pipfile' and then add either a 'requirements.txt',
           remote:  !     'poetry.lock' or 'uv.lock' file.
           remote:  !     
-          remote:  !     Note: This error replaces the warning which was displayed in
-          remote:  !     build logs starting 12th November 2024.
+          remote:  !     If you aren't sure which package manager to use, we recommend
+          remote:  !     trying uv, since it supports lockfiles, is extremely fast, and
+          remote:  !     is actively maintained by a full-time team:
+          remote:  !     https://docs.astral.sh/uv/
           remote: 
           remote:  !     Push rejected, failed to compile Python app.
         REGEX
@@ -444,8 +455,9 @@ RSpec.describe 'Pipenv support' do
     end
   end
 
-  context 'when the Pipenv version has changed since the last build' do
-    let(:buildpacks) { ['https://github.com/heroku/heroku-buildpack-python#v291'] }
+  # TODO: Rename this test description back this when the Pipenv version next changes.
+  context 'when the Python version has changed since the last build' do
+    let(:buildpacks) { ['https://github.com/heroku/heroku-buildpack-python#v313'] }
     let(:app) { Hatchet::Runner.new('spec/fixtures/pipenv_basic', buildpacks:) }
 
     it 'clears the cache before installing' do
@@ -456,16 +468,14 @@ RSpec.describe 'Pipenv support' do
         app.push!
         expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX))
           remote: -----> Python app detected
-          remote: -----> Using Python #{DEFAULT_PYTHON_MAJOR_VERSION} specified in Pipfile.lock
+          remote: -----> Using Python 3.14 specified in Pipfile.lock
           remote: -----> Discarding cache since:
-          remote:        - The Python version has changed from 3.13.5 to #{DEFAULT_PYTHON_FULL_VERSION}
-          remote:        - The Pipenv version has changed from 2024.0.1 to #{PIPENV_VERSION}
-          remote: -----> Installing Python #{DEFAULT_PYTHON_FULL_VERSION}
+          remote:        - The Python version has changed from 3.14.0 to #{LATEST_PYTHON_3_14}
+          remote: -----> Installing Python #{LATEST_PYTHON_3_14}
           remote: -----> Installing Pipenv #{PIPENV_VERSION}
           remote: -----> Installing dependencies using 'pipenv install --deploy'
           remote:        Installing dependencies from Pipfile.lock \\(.+\\)...
           remote: -----> Saving cache
-          remote: -----> Discovering process types
         REGEX
       end
     end
@@ -477,7 +487,7 @@ RSpec.describe 'Pipenv support' do
 
     it 'rewrites .pth and finder paths correctly for hooks, later buildpacks, runtime and cached builds' do
       app.deploy do |app|
-        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX))
+        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX, Regexp::MULTILINE))
           remote: -----> Installing dependencies using 'pipenv install --deploy'
           remote:        Installing dependencies from Pipfile.lock \\(.+\\)...
           remote: -----> Running bin/post_compile hook
@@ -491,6 +501,7 @@ RSpec.describe 'Pipenv support' do
           remote:        Running entrypoint for the setup.py-based local package: Hello from setup.py!
           remote:        Running entrypoint for the VCS package: gunicorn \\(version 23.0.0\\)
           remote: -----> Saving cache
+          .+
           remote: -----> Inline app detected
           remote: __editable___gunicorn_23_0_0_finder.py:/app/.heroku/python/src/gunicorn/gunicorn'}
           remote: __editable___local_package_pyproject_toml_0_0_1_finder.py:/tmp/build_.+/packages/local_package_pyproject_toml/local_package_pyproject_toml'}
@@ -519,7 +530,7 @@ RSpec.describe 'Pipenv support' do
         # Test that the cached .pth files work correctly.
         app.commit!
         app.push!
-        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX))
+        expect(clean_output(app.output)).to match(Regexp.new(<<~REGEX, Regexp::MULTILINE))
           remote: -----> Installing dependencies using 'pipenv install --deploy'
           remote:        Installing dependencies from Pipfile.lock \\(.+\\)...
           remote: -----> Running bin/post_compile hook
@@ -533,6 +544,7 @@ RSpec.describe 'Pipenv support' do
           remote:        Running entrypoint for the setup.py-based local package: Hello from setup.py!
           remote:        Running entrypoint for the VCS package: gunicorn \\(version 23.0.0\\)
           remote: -----> Saving cache
+          .+
           remote: -----> Inline app detected
           remote: __editable___gunicorn_23_0_0_finder.py:/app/.heroku/python/src/gunicorn/gunicorn'}
           remote: __editable___local_package_pyproject_toml_0_0_1_finder.py:/tmp/build_.+/packages/local_package_pyproject_toml/local_package_pyproject_toml'}

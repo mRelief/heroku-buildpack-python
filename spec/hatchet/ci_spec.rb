@@ -33,14 +33,27 @@ RSpec.describe 'Heroku CI' do
                  LD_LIBRARY_PATH=/app/.heroku/python/lib
                  LIBRARY_PATH=/app/.heroku/python/lib
                  PATH=/app/.heroku/python/bin::/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/app/.sprettur/bin/
+                 PIP_DISABLE_PIP_VERSION_CHECK=1
                  PKG_CONFIG_PATH=/app/.heroku/python/lib/pkg-config
                  PYTHONUNBUFFERED=1
           -----> Saving cache
+
+           !     Note: We recently added support for the package manager uv:
+           !     https://devcenter.heroku.com/changelog-items/3238
+           !     
+           !     It's now our recommended Python package manager, since it
+           !     supports lockfiles, is faster, gives more helpful error
+           !     messages, and is actively maintained by a full-time team.
+           !     
+           !     If you haven't tried it yet, we suggest you take a look!
+           !     https://docs.astral.sh/uv/
+
           -----> Inline app detected
           LANG=en_US.UTF-8
           LD_LIBRARY_PATH=/app/.heroku/python/lib
           LIBRARY_PATH=/app/.heroku/python/lib
           PATH=/app/.heroku/python/bin:/usr/local/bin:/usr/bin:/bin:/app/.sprettur/bin/
+          PIP_DISABLE_PIP_VERSION_CHECK=1
           PYTHONHOME=/app/.heroku/python
           PYTHONPATH=/app
           PYTHONUNBUFFERED=true
@@ -54,6 +67,7 @@ RSpec.describe 'Heroku CI' do
           LD_LIBRARY_PATH=/app/.heroku/python/lib
           LIBRARY_PATH=/app/.heroku/python/lib
           PATH=/app/.heroku/python/bin:/usr/local/bin:/usr/bin:/bin:/app/.sprettur/bin/:/app/.sprettur/bin/
+          PIP_DISABLE_PIP_VERSION_CHECK=1
           PYTHONHOME=/app/.heroku/python
           PYTHONPATH=/app
           PYTHONUNBUFFERED=true
@@ -114,6 +128,17 @@ RSpec.describe 'Heroku CI' do
                  PYTHONUNBUFFERED=1
                  VIRTUAL_ENV=/app/.heroku/python
           -----> Saving cache
+
+           !     Note: We recently added support for the package manager uv:
+           !     https://devcenter.heroku.com/changelog-items/3238
+           !     
+           !     It's now our recommended Python package manager, since it
+           !     supports lockfiles, is faster, gives more helpful error
+           !     messages, and is actively maintained by a full-time team.
+           !     
+           !     If you haven't tried it yet, we suggest you take a look!
+           !     https://docs.astral.sh/uv/
+
           -----> Inline app detected
           LANG=en_US.UTF-8
           LD_LIBRARY_PATH=/app/.heroku/python/lib
@@ -177,7 +202,7 @@ RSpec.describe 'Heroku CI' do
           -----> Installing dependencies using 'poetry sync'
                  Installing dependencies from lock file
                  
-                 Package operations: 5 installs, 0 updates, 0 removals
+                 Package operations: 6 installs, 0 updates, 0 removals
                  
                    .+
                    - Installing (pytest|typing-extensions) .+
@@ -202,6 +227,17 @@ RSpec.describe 'Heroku CI' do
                  POETRY_VIRTUALENVS_USE_POETRY_PYTHON=true
                  PYTHONUNBUFFERED=1
           -----> Saving cache
+
+           !     Note: We recently added support for the package manager uv:
+           !     https://devcenter.heroku.com/changelog-items/3238
+           !     
+           !     It's now our recommended Python package manager, since it
+           !     supports lockfiles, is faster, gives more helpful error
+           !     messages, and is actively maintained by a full-time team.
+           !     
+           !     If you haven't tried it yet, we suggest you take a look!
+           !     https://docs.astral.sh/uv/
+
           -----> Inline app detected
           LANG=en_US.UTF-8
           LD_LIBRARY_PATH=/app/.heroku/python/lib
@@ -260,9 +296,9 @@ RSpec.describe 'Heroku CI' do
           -----> Installing Python #{DEFAULT_PYTHON_FULL_VERSION}
           -----> Installing uv #{UV_VERSION}
           -----> Installing dependencies using 'uv sync --locked'
-                 Resolved 7 packages in .+s
-                 Prepared 5 packages in .+s
-                 Installed 5 packages in .+s
+                 Resolved 8 packages in .+s
+                 Prepared 6 packages in .+s
+                 Installed 6 packages in .+s
                  Bytecode compiled .+ files in .+s
                   .+
                   \\+ (pytest|typing-extensions)==.+
@@ -325,7 +361,7 @@ RSpec.describe 'Heroku CI' do
           -----> Using cached install of Python #{DEFAULT_PYTHON_FULL_VERSION}
           -----> Using cached uv #{UV_VERSION}
           -----> Installing dependencies using 'uv sync --locked'
-                 Resolved 7 packages in .+s
+                 Resolved 8 packages in .+s
                  Bytecode compiled .+ files in .+s
           -----> Skipping Django collectstatic since the env var DISABLE_COLLECTSTATIC is set.
           -----> Running bin/post_compile hook
